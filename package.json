@@ -1,0 +1,26 @@
+{
+  "name": "faqs_cpt",
+  "version": "1.0.0",
+  "description": "A Frequently Asked Questions plugin for WordPress",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+		"eslint": "eslint --config .eslintrc.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carmemias/faqs_cpt.git"
+  },
+  "author": "carmemias",
+  "license": "GPL-2.0+",
+  "bugs": {
+    "url": "https://github.com/carmemias/faqs_cpt/issues"
+  },
+  "homepage": "https://github.com/carmemias/faqs_cpt#readme",
+  "devDependencies": {
+    "eslint": "^5.8.0",
+    "eslint-config-wordpress": "^2.0.0"
+  },
+  "eslintConfig": {
+    "extends": "wordpress"
+  }
+}

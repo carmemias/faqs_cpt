@@ -2,10 +2,10 @@
 /**
  * Frequently Asked Questions Custom Post Type.
  *
- * @package     CarmeMias\FAQsFunctionality
- * @author      carmemias
- * @copyright   2017 Carme Mias Studio
- * @license     GPL-2.0+
+ * @package   CarmeMias\FAQsFunctionality
+ * @author    carmemias info@carmemias.com
+ * @copyright 2017 Carme Mias Studio
+ * @license   GPL-2.0+
  *
  * @wordpress-plugin
  * Plugin Name: Frequently Asked Questions Custom Post Type
@@ -64,9 +64,7 @@ function init_hooks() {
  */
 function flush_rewrites() {
 	init_autoloader();
-
 	src\cm_faq_cpt();
-
 	flush_rewrite_rules();
 }
 
@@ -78,8 +76,7 @@ function flush_rewrites() {
  * @return void
  */
 function init_autoloader() {
-	require_once 'src/support/autoloader.php';
-
+	include_once 'src/support/autoloader.php';
 	Support\autoload_files( __DIR__ . '/src/' );
 }
 

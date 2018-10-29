@@ -6,7 +6,6 @@
  * @author      carmemias
  * @copyright   2017 Carme Mias Studio
  * @license     GPL-2.0+
- *
  */
 
 namespace CarmeMias\FAQsFunctionality\src;
@@ -28,8 +27,12 @@ function cm_faqs_shortcode_enqueue_scripts() {
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\cm_faqs_shortcode_enqueue_scripts' );
 
-
-// [faqs category="category-slug|category name"] category attrib value not case sensitive.
+/**
+ * Shortcode function
+ * [faqs category="category-slug|category name"] category attrib value not case sensitive.
+ *
+ * @param (array) $atts Shortcode attributes.
+ */
 function cm_faqs_shortcode_handler( $atts ) {
 	$results_array     = [];
 	$cm_faq_categories = [];
@@ -44,7 +47,7 @@ function cm_faqs_shortcode_handler( $atts ) {
 	);
 
 	// find category/ies.
-	if ( ( '' !== $a['category'] ) ) {
+	if ( '' !== $a['category'] ) {
 
 		// the category attribute has been set.
 		// does this category exist?
@@ -115,36 +118,39 @@ function cm_faqs_shortcode_handler( $atts ) {
 		$output_string .= '<h2 class="category-title">' . esc_attr( $category_name ) . '</h3>';
 		$output_string .= '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">';
 
-		foreach ( $questions as $question ) :
-			// See https://codex.wordpress.org/Function_Reference/setup_postdata and http://www.php.net/manual/en/language.references.whatdo.php.
-			setup_postdata( $GLOBALS['post'] =& $question );
+		if ( ! empty( $questions ) ) {
+			foreach ( $questions as $question ) :
+				// See https://codex.wordpress.org/Function_Reference/setup_postdata and http://www.php.net/manual/en/language.references.whatdo.php.
+				global $post;
+				$post = $question;
+				setup_postdata( $post );
 
-			$output_substring = '';
-			$question_id      = $question->ID;
-			$question_title   = get_the_title( $question_id );
-			$answer           = apply_filters( 'the_content', get_the_content() );
-			$question_order   = get_post_meta( get_the_ID(), '_cm_faq_order', true );
+				$output_substring = '';
+				$question_id      = $question->ID;
+				$question_title   = get_the_title( $question_id );
+				$answer           = apply_filters( 'the_content', get_the_content() );
+				$question_order   = get_post_meta( get_the_ID(), '_cm_faq_order', true );
 
-			if ( ( 'hidden' !== $question_order ) && ( 'not set' !== $question_order ) ) {
+				if ( ( 'hidden' !== $question_order ) && ( 'not set' !== $question_order ) ) {
 
-				$output_substring .= '<article id="post-' . esc_attr( $question_id ) . '" class="post-' . esc_attr( $question_id ) . ' cm_faq type-cm_faq status-publish hentry faq-category-' . esc_attr( $category_slug ) . '" >';
-				$output_substring .= '<header class="entry-header" role="tab" id="heading-' . esc_attr( $question_id ) . '">';
-				$output_substring .= '<h3 class="entry-title"><a role="button" class="collapsed" data-parent="#accordion" href="#collapse-' . esc_attr( $question_id ) . '" aria-expanded="false" aria-controls="collapse-' . esc_attr( $question_id ) . '">';
-				$output_substring .= esc_attr( $question_title );
-				$output_substring .= '<span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true" role="img"></span></a></h3>';
-				$output_substring .= '</header><!-- .entry-header -->';
-				$output_substring .= '<div class="entry-content collapse" role="tabpanel" aria-labelledby="heading-' . esc_attr( $question_id ) . '" id="collapse-' . esc_attr( $question_id ) . '">';
-				$output_substring .= html_entity_decode( esc_textarea( $answer ) );
-				$output_substring .= '</div --><!-- .entry-content -->';
-				$output_substring .= '</article><!-- #post-' . esc_attr( $question_id ) . ' -->';
-			} else {
-				$output_substring .= esc_html__( 'There are no questions under this category yet', 'faqs-functionality' );
-			}// end if $question_order.
+					$output_substring .= '<article id="post-' . esc_attr( $question_id ) . '" class="post-' . esc_attr( $question_id ) . ' cm_faq type-cm_faq status-publish hentry faq-category-' . esc_attr( $category_slug ) . '" >';
+					$output_substring .= '<header class="entry-header" role="tab" id="heading-' . esc_attr( $question_id ) . '">';
+					$output_substring .= '<h3 class="entry-title"><a role="button" class="collapsed" data-parent="#accordion" href="#collapse-' . esc_attr( $question_id ) . '" aria-expanded="false" aria-controls="collapse-' . esc_attr( $question_id ) . '">';
+					$output_substring .= esc_attr( $question_title );
+					$output_substring .= '<span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true" role="img"></span></a></h3>';
+					$output_substring .= '</header><!-- .entry-header -->';
+					$output_substring .= '<div class="entry-content collapse" role="tabpanel" aria-labelledby="heading-' . esc_attr( $question_id ) . '" id="collapse-' . esc_attr( $question_id ) . '">';
+					$output_substring .= html_entity_decode( esc_textarea( $answer ) );
+					$output_substring .= '</div --><!-- .entry-content -->';
+					$output_substring .= '</article><!-- #post-' . esc_attr( $question_id ) . ' -->';
+				} // end if $question_order.
 
-			$output_string .= $output_substring;
+				$output_string .= $output_substring;
 
-		endforeach; // foreach questions array within single_result.
-
+			endforeach; // foreach questions array within single_result.
+		} else {
+			$output_string .= '<p>' . esc_html__( 'There are no questions for this topic yet.', 'faqs-functionality' ) . '</p>';
+		}
 		$output_string .= '</div><!-- accordion -->';
 
 	} // foreach $results_array.

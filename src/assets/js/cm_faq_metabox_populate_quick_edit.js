@@ -4,36 +4,36 @@
  * @package CarmeMias\FAQsFunctionality
  */
 
-(function($) {
+( function( $ ) {
 
 	// we create a copy of the WP inline edit post function.
-	var $wp_inline_edit = inlineEditPost.edit;
+	var wpInlineEdit = inlineEditPost.edit;
 
 	// and then we overwrite the function with our own code.
 	inlineEditPost.edit = function( id ) {
 
 		// "call" the original WP edit function, we don't want to leave WordPress hanging.
-		$wp_inline_edit.apply( this, arguments );
+		wpInlineEdit.apply( this, arguments );
 
 		// get the post ID.
-		var $post_id = 0;
-		if ( typeof( id ) == 'object' ) {
-			$post_id = parseInt( this.getId( id ) );
+		var postId = 0;
+		if ( 'object' == typeof( id ) ) {
+			postId = parseInt( this.getId( id ) );
 		}
 
-		if ( $post_id > 0 ) {
+		if ( 0 < postId ) {
 
 			// define the edit row.
-			var $edit_row = $( '#edit-' + $post_id );
+			var editRow = $( '#edit-' + postId );
 
 			// get the FAQ Order.
-			var $cm_faq_order_value = $( '#cm_faq_order-' + $post_id ).text();
+			var orderValue = $( '#cm_faq_order-' + postId ).text();
 
 			// set the FAQ Order.
-			$edit_row.find( 'select[name="_cm_faq_order"] option[value="' + $cm_faq_order_value + '"]' ).prop( 'selected', true );
+			editRow.find( 'select[name="_cm_faq_order"] option[value="' + orderValue + '"]' ).prop( 'selected', true );
 
 		}
 
 	};
 
-})( jQuery );
+}( jQuery ) );

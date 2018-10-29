@@ -1,7 +1,7 @@
 <?php
 namespace CarmeMias\FAQsFunctionality\src\views;
 
-	//[faqs category="category-slug|category name"] category attrib value not case sensitive
+	// [faqs category="category-slug|category name"] category attrib value not case sensitive
 ?>
 
 <table class="form-table">
