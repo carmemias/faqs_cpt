@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "A Frequently Asked Questions plugin for WordPress",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-		"eslint": "eslint --config .eslintrc.json"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",

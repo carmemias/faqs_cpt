@@ -11,12 +11,12 @@
 
 	// and then we overwrite the function with our own code.
 	inlineEditPost.edit = function( id ) {
+		var postId = 0;
 
 		// "call" the original WP edit function, we don't want to leave WordPress hanging.
 		wpInlineEdit.apply( this, arguments );
 
 		// get the post ID.
-		var postId = 0;
 		if ( 'object' == typeof( id ) ) {
 			postId = parseInt( this.getId( id ) );
 		}
