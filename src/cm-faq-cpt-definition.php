@@ -147,9 +147,11 @@ function render_cm_faq_metabox() {
 function save_cm_faq_meta( $post_id, $post ) {
 	if ( ! isset( $_POST['cm_faq_noncename'] ) ) {
 		return;
+	} else {
+		$nonce = filter_input( INPUT_POST, 'cm_faq_noncename', FILTER_SANITIZE_STRING );
 	}
 	// verify this came from the our screen and with proper authorization, because save_post can be triggered at other times.
-	if ( ! wp_verify_nonce( wp_unslash( $_POST['cm_faq_noncename'] ), plugin_basename( __FILE__ ) ) ) {
+	if ( ! wp_verify_nonce( $nonce, plugin_basename( __FILE__ ) ) ) {
 		return $post->ID;
 	}
 
@@ -159,7 +161,7 @@ function save_cm_faq_meta( $post_id, $post ) {
 	}
 
 	// ok, we're authenticated: we need to find and save the data. We'll put it into an array to make it easier to loop through.
-	$faq_meta['_cm_faq_order'] = sanitize_text_field( wp_unslash( $_POST['_cm_faq_order'] ) );
+	$faq_meta['_cm_faq_order'] = filter_input( INPUT_POST, '_cm_faq_order', FILTER_SANITIZE_STRING );
 
 	// Add values of $events_meta as custom fields.
 	foreach ( $faq_meta as $key => $value ) {
@@ -243,8 +245,8 @@ add_filter( 'bulk_post_updated_messages', __NAMESPACE__ . '\cm_faq_bulk_updated_
  * FAQs bulk update messages.
  * See https://codex.wordpress.org/Plugin_API/Filter_Reference/bulk_post_updated_messages
  *
- * @param array $messages Existing post bulk update messages.
- *
+ * @param array $bulk_messages Existing post bulk update messages.
+ * @param array $bulk_counts Existing count for post bulk update messages.
  * @return array Amended post update messages with new CPT update messages.
  */
 function cm_faq_bulk_updated_messages( $bulk_messages, $bulk_counts ) {
@@ -271,9 +273,12 @@ function cm_faq_bulk_updated_messages( $bulk_messages, $bulk_counts ) {
  */
 // see http://shibashake.com/wordpress-theme/expand-the-wordpress-quick-edit-menu .
 add_filter( 'manage_cm_faq_posts_columns', __NAMESPACE__ . '\add_custom_columns' );
-/*
-* Add a new column for FAQ order in the FAQs List table.
-*/
+
+/**
+ * Add a new column for FAQ order in the FAQs List table.
+ *
+ * @param (array) $columns Columns in the FAQs table.
+ */
 function add_custom_columns( $columns ) {
 	// remove Date column from its default position .
 	$date = $columns['date'];
@@ -289,10 +294,14 @@ function add_custom_columns( $columns ) {
 }
 
 add_action( 'manage_posts_custom_column', __NAMESPACE__ . '\custom_columns', 10, 2 );
-/*
-* Display the metaboxes value in the Post List table
-* See https://github.com/bamadesigner/manage-wordpress-posts-using-bulk-edit-and-quick-edit/blob/master/manage_wordpress_posts_using_bulk_edit_and_quick_edit.php line 169
-*/
+
+/**
+ * Display the metaboxes value in the Post List table
+ * See https://github.com/bamadesigner/manage-wordpress-posts-using-bulk-edit-and-quick-edit/blob/master/manage_wordpress_posts_using_bulk_edit_and_quick_edit.php line 169
+ *
+ * @param (string) $column Column title.
+ * @param (int)    $post_id Post ID.
+ */
 function custom_columns( $column, $post_id ) {
 	switch ( $column ) {
 		case 'cm_faq_order':
@@ -318,9 +327,12 @@ function custom_columns( $column, $post_id ) {
 }
 
 add_filter( 'manage_edit-cm_faq_sortable_columns', __NAMESPACE__ . '\order_sortable_column' );
-/*
-* Make new Post Priority column sortable
-*/
+
+/**
+ * Make new Post Priority column sortable
+ *
+ * @param (array) $columns Columns in the FAQs table.
+ */
 function order_sortable_column( $columns ) {
 
 	$columns['cm_faq_order'] = 'cm_faq_order';
@@ -329,9 +341,12 @@ function order_sortable_column( $columns ) {
 }
 
 add_action( 'pre_get_posts', __NAMESPACE__ . '\order_orderby_backend' );
-/*
-* Priority sorting instructions for the backend only (front end is set in home.php)
-*/
+
+/**
+ * Priority sorting instructions for the backend only (front end is set in home.php)
+ *
+ * @param (object) $query The Object Query.
+ */
 function order_orderby_backend( $query ) {
 	if ( ! is_admin() ) {
 		return;
@@ -349,9 +364,13 @@ function order_orderby_backend( $query ) {
  * QUICK EDIT MENU
  */
 add_action( 'quick_edit_custom_box', __NAMESPACE__ . '\add_metabox_to_quick_edit', 10, 2 );
-/*
-* Add FAQ Order metabox to Quick Edit Menu
-*/
+
+/**
+ * Add FAQ Order metabox to Quick Edit Menu
+ *
+ * @param (string) $column_name Column name.
+ * @param (string) $post_type Post type.
+ */
 function add_metabox_to_quick_edit( $column_name, $post_type ) {
 	if ( ! in_array( $column_name, array( 'cm_faq_order' ), true ) ) {
 		return;
@@ -360,8 +379,12 @@ function add_metabox_to_quick_edit( $column_name, $post_type ) {
 }
 
 add_action( 'save_post', __NAMESPACE__ . '\save_metabox_quick_edit_data', 1, 2 );
+
 /**
  * Save new FAQ order value, attributed through the Quick Edit menu.
+ *
+ * @param (int)    $post_id Post ID.
+ * @param (object) $post Post Object.
  **/
 function save_metabox_quick_edit_data( $post_id, $post ) {
 	$post_type = get_post_type( $post );
@@ -374,7 +397,7 @@ function save_metabox_quick_edit_data( $post_id, $post ) {
 		$current_screen = get_current_screen(); // was clashing with other plugins without this.
 		if ( null != $current_screen ) {
 			$current_action = $current_screen->action;
-			if ( 'add' !== $current_action ) {
+			if ( 'add' != $current_action ) {
 				return;
 			}
 		}
@@ -386,18 +409,18 @@ function save_metabox_quick_edit_data( $post_id, $post ) {
 		return $post_id;
 	}
 
-	// Check permissions
+	// Check permissions.
 	if ( ! current_user_can( 'edit_post', $post_id ) ) {
 		return $post_id;
 	}
 
 	// ok, we're authenticated: we need to find and save the data.
 	// We'll put it into an array to make it easier to loop through .
-	$faq_meta['_cm_faq_order'] = sanitize_text_field( $_POST['_cm_faq_order'] );
+	$faq_meta['_cm_faq_order'] = filter_input( INPUT_POST, '_cm_faq_order', FILTER_SANITIZE_STRING );
 
-	// Add value as custom fields
+	// Add value as custom fields.
 	foreach ( $faq_meta as $key => $value ) {
-		// Cycle through the array
+		// Cycle through the array.
 		if ( 'revision' === $post->post_type ) {
 			return;
 		} // Don't store custom data twice .
@@ -405,7 +428,7 @@ function save_metabox_quick_edit_data( $post_id, $post ) {
 		$value = implode( ',', (array) $value ); // If $value is an array, make it a CSV (unlikely) .
 
 		if ( get_post_meta( $post->ID, $key, false ) ) {
-			// If the custom field already has a value
+			// If the custom field already has a value.
 			update_post_meta( $post->ID, $key, $value );
 		} else {
 			// If the custom field doesn't already have a value or it has changed .
@@ -420,9 +443,10 @@ function save_metabox_quick_edit_data( $post_id, $post ) {
 }
 
 add_action( 'admin_notices', __NAMESPACE__ . '\admin_notice' );
-/*
-* Show a warning notice in the FAQ Edit page if the FAQ's current order value is higher than the number of FAQS.
-*/
+
+/**
+ * Show a warning notice in the FAQ Edit page if the FAQ's current order value is higher than the number of FAQS.
+ */
 function admin_notice() {
 	global $pagenow;
 	global $post;

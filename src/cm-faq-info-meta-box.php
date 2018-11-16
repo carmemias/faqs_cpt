@@ -34,7 +34,9 @@ function add_shortcode_info( $post ) {
 function render_shortcode_info_view() {
 	global $post;
 
-	// Noncename needed to verify where the data originated
+	// Noncename needed to verify where the data originated.
+	//phpcs:disable
 	// echo '<input type="hidden" name="shortcode_info_noncename" value="' . esc_attr( wp_create_nonce( plugin_basename(__FILE__) ) ) . '" />';
+	//phpcs:enable 
 	require_once plugin_dir_path( __FILE__ ) . 'views/info-admin-view.php';
 }
