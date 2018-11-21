@@ -1,5 +1,13 @@
 <?php
+/**
+ * Extra fields for the FAQ order metabox added to the FAQ Edit screen.
+ *
+ * @package faqs_cpt
+ */
+
 namespace CarmeMias\FAQsFunctionality\src\views;
+
+global $post;
 
 // Get the data if its already been entered.
 $cm_faq_order     = get_post_meta( $post->ID, '_cm_faq_order', true );
@@ -31,7 +39,11 @@ if ( 'add' === $screen->action ) {
 		> <label>FAQ Order:</label>
 			<select id="_cm_faq_order" name="_cm_faq_order" class="" value="<?php echo esc_attr( $cm_faq_order ); ?>">
 				<option value="not set"><?php echo esc_html__( 'Select order...', 'faqs-functionality' ); ?></option>
-				<option value="hidden"><?php echo esc_html__( 'Do not show', 'faqs-functionality' ); ?></option>
+				<option value="hidden"
+				<?php
+				if ( $cm_faq_order && ( 'hidden' === $cm_faq_order ) ) {
+					?>
+					selected <?php } ?> ><?php echo esc_html__( 'Hidden', 'faqs-functionality' ); ?></option>
 				<option value="10000"
 				<?php
 				if ( $cm_faq_order && ( '10000' === $cm_faq_order ) ) {
