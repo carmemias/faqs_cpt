@@ -59,7 +59,7 @@ function cm_faqs_shortcode_handler( $atts ) {
 		// if the category doesn't exist, return error message.
 		if ( ( 0 === $category_id ) || ( null === $category_id ) ) {
 
-			return '<p>' . __( 'The selected category does not exist.', 'faqs-functionality' ) . '</p>';
+			return '<p class="message-info">' . __( 'This category does not exist yet.', 'faqs-functionality' ) . '</p>';
 
 		}
 
@@ -71,6 +71,9 @@ function cm_faqs_shortcode_handler( $atts ) {
 			)
 		);
 
+		if ( ! $cm_faq_categories[0]->count > 0 ) {
+			$output_string .= '<p class="message-info">' . __( 'There are no questions under category', 'faqs-functionality' ) . ' "' . esc_html( $a['category'] ) . '" yet.</p>';
+		}
 	} else {
 
 		// no arguments have been set by the Editor, so all FAQs will be listed grouped by category and in the order specified.
@@ -122,16 +125,15 @@ function cm_faqs_shortcode_handler( $atts ) {
 			foreach ( $questions as $question ) :
 				// See https://codex.wordpress.org/Function_Reference/setup_postdata and http://www.php.net/manual/en/language.references.whatdo.php.
 				global $post;
-				$post = $question;
-				setup_postdata( $post );
+				setup_postdata( $question );
 
 				$output_substring = '';
 				$question_id      = $question->ID;
-				$question_title   = get_the_title( $question_id );
-				$answer           = apply_filters( 'the_content', get_the_content() );
-				$question_order   = get_post_meta( get_the_ID(), '_cm_faq_order', true );
+				$question_order   = get_post_meta( $question_id, '_cm_faq_order', true );
 
 				if ( ( 'hidden' !== $question_order ) && ( 'not set' !== $question_order ) ) {
+					$question_title = get_the_title( $question_id );
+					$answer         = apply_filters( 'the_content', get_the_content() );
 
 					$output_substring .= '<article id="post-' . esc_attr( $question_id ) . '" class="post-' . esc_attr( $question_id ) . ' cm_faq type-cm_faq status-publish hentry faq-category-' . esc_attr( $category_slug ) . '" >';
 					$output_substring .= '<header class="entry-header" role="tab" id="heading-' . esc_attr( $question_id ) . '">';
@@ -148,9 +150,8 @@ function cm_faqs_shortcode_handler( $atts ) {
 				$output_string .= $output_substring;
 
 			endforeach; // foreach questions array within single_result.
-		} else {
-			$output_string .= '<p>' . esc_html__( 'There are no questions for this topic yet.', 'faqs-functionality' ) . '</p>';
 		}
+
 		$output_string .= '</div><!-- accordion -->';
 
 	} // foreach $results_array.
