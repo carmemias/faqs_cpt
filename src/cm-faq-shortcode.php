@@ -65,23 +65,8 @@ function shortcode_handler( $atts ) {
 
 		}
 
-<<<<<<< HEAD
 		// finds the category object and returns it.
 		$cm_faq_category = get_term( $category_id, 'faq-category' );
-=======
-		// finds the category object, returns an array with a single object.
-		$cm_faq_categories = get_terms(
-			array(
-				'taxonomy' => 'faq-category',
-				'include'  => $category_id,
-			)
-		);
-
-		if ( ! $cm_faq_categories[0]->count > 0 ) {
-			$output_string .= '<p class="message-info">' . __( 'There are no questions under category', 'faqs-functionality' ) . ' "' . esc_html( $a['category'] ) . '" yet.</p>';
-		}
-	} else {
->>>>>>> a9f4861293a8f79c6e1099e3904b7c1a3c117432
 
 		if ( ! $cm_faq_category || is_wp_error( $cm_faq_category ) ) {
 			return '<p class="message-info">' . __( 'An error has occurred. Please check the shortcode has been entered correctly', 'faq-functionality' ) . '</p>';
@@ -135,12 +120,6 @@ function shortcode_handler( $atts ) {
 				$output_string .= $output_substring;
 
 			endforeach; // foreach questions array within single_result.
-<<<<<<< HEAD
-=======
-		}
-
-		$output_string .= '</div><!-- accordion -->';
->>>>>>> a9f4861293a8f79c6e1099e3904b7c1a3c117432
 
 			wp_reset_postdata();
 
