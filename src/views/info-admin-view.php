@@ -1,4 +1,11 @@
 <?php
+/**
+ * Information box to let Editor know how to use the shortcode.
+ * Appears in the pages and posts Edit screen.
+ *
+ * @package faq_cpt
+ */
+
 namespace CarmeMias\FAQsFunctionality\src\views;
 
 	// [faqs category="category-slug|category name"] category attrib value not case sensitive
