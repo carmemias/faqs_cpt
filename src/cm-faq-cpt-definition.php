@@ -463,10 +463,10 @@ function admin_notice() {
 	if ( $display_warning ) {
 		$warning_message = '<div class="notice notice-warning is-dismissible"><p>';
 		// translators: %1$d is the order number selected for that FAQ and %2$d is the total number of FAQs.
-		$warning_message .= sprintf( esc_html__( 'The order currently selected for this FAQ is %1$d but there are only %2$d published FAQs. The FAQ will still show work but its order value will not be listed in the dropdown list further down this page.', 'faqs-functionality' ), intval( $cm_faq_order ), intval( $current_num_faqs ) );
+		$warning_message .= sprintf( esc_html__( 'The order currently selected for this FAQ is %1$d but there are only %2$d published FAQs. The FAQ will still behave as expected but its order value will not be listed in the dropdown list further down this page.', 'faqs-functionality' ), intval( $cm_faq_order ), intval( $current_num_faqs ) );
 		$warning_message .= '</p></div>';
 
-		echo $warning_message;
+		echo wp_kses_post( $warning_message );
 	}
 }
 
